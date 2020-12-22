@@ -6,7 +6,7 @@ class StringDictionary
     }
 
     static isVowelSymbol(symbol){
-        return this.allVowelInAlphabet.indexOf(symbol.toLowerCase()) !==0
+        return this.allVowelInAlphabet.indexOf(symbol.toLowerCase()) !==-1
     }
 
     static getVowelSymbolCount(str){
@@ -37,10 +37,9 @@ class StringDictionary
         return [... new Set(this.strStorage.join(''))].length;
     }
 
-    getAllDifferent(){
+    getAllDifferentStrings(){
         return [... new Set(this.strStorage)];
     }
-
 
     getWithDoubleSymbols() {
         return this.strStorage.filter((str) => {
@@ -50,7 +49,7 @@ class StringDictionary
         });
     }
 
-    splitOnTwoParts(){
+    splitEqualParts(){
         this.strStorage.sort((str1, str2) => {return str2.length - str1.length});
         let partSumLength = [0, 0];
         let part = [[], []];
@@ -70,7 +69,7 @@ class StringDictionary
         return part;
     }
 
-    getWithVowelSymbols(){
+    getStringWithMaxVowelCount(){
         return this.strStorage.reduce((answer, str) => {
             let vowelSymbolsCount = StringDictionary.getVowelSymbolsCount(str);
             if (!answer.str || vowelSymbolsCount > answer.count){
@@ -81,25 +80,10 @@ class StringDictionary
     }
 
 
-
     getWithLengthMore(minLength) {
         return this.strStorage.filter((str) =>{return str.length > minLength})
     }
 
-    getVowelSymbolsForEach() {
-        return this.strStorage.map((str) => {
-            let strArray = [...str]
-            let strArrayFiltred = [...str].filter((symbol) =>{
-                return this.allVowelInAlphabet.indexOf(symbol) !== -1;
-            })
-            return strArrayFiltred.join('')
-        })
-    }
-
-    getVowelSymbolsCount(){
-        let vowelSymbolsFromStrings = this.getVowelSymbols();
-        return vowelSymbolsFromStrings.map((str) => {return str.length})
-    }
 
     async print() {
 
@@ -143,30 +127,30 @@ class Matrix {
     }
 
     checkColumnIndex(index){
-        if (!this.isEmpty && index > this.columnCount) throw new RangeError();
+        if (!this.isEmpty && index > this.columnCount || index <0) throw new RangeError();
     }
 
     checkRowIndex(index){
-        if (!this.isEmpty && index > this.rowCount) throw new RangeError();
+        if (!this.isEmpty && index > this.rowCount || index <0) throw new RangeError();
     }
 
-    checkRowsSize(newRowSize){
-        if (!this.isEmpty && newRowSize !== this.columnCount) throw new RangeError();
+    checkRowsLength(lengthOfNewRow){
+        if (!this.isEmpty && (lengthOfNewRow !== this.columnCount)) throw new RangeError();
     }
 
-    checkColumnsSize(newColumnSize){
-        if (!this.isEmpty&& newColumnSize !== this.rowCount) throw new RangeError();
+    checkColumnsLength(lengthOfNewColumn){
+        if (!this.isEmpty&& (lengthOfNewColumn !== this.rowCount)) throw new RangeError();
     }
 
     addRow(row, index) {
         this.checkRowIndex(index);
-        this.checkRowsSize(row.length);
+        this.checkRowsLength(row.length);
         this.matrix.splice(index, 0, row);
     }
 
     addColumn(column, index){
         this.checkColumnIndex(index);
-        this.checkColumnsSize(column.length);
+        this.checkColumnsLength(column.length);
         this.matrix.forEach((row, i) => {
             row.splice(index, 0, column[i])
         })
@@ -201,88 +185,6 @@ class Matrix {
 
 
     print(){
-        this.matrix.forEach((row) => console.log(row.join('\t')))
+        console.log(this.matrix.map(row => {return row.join('\t')}).join('\n') )
     }
 }
-
-let matrix1 = new Matrix();
-
-matrix1.addRow([1, 2, 3], 0);
-console.log(matrix1.rowCount, matrix1.columnCount)
-
-matrix1.addRow([4, 5, 6], 0);
-matrix1.addColumn([7,8], 2);
-matrix1.print();
-matrix1.removeColumn(0);
-matrix1.removeRow(0);
-
-console.log('Просуммируем содержимое матрицы (=13)', matrix1.sum());
-
-matrix2 = new Matrix();
-console.log('Просуммируем содержимое пустой матрицы (=0)', matrix2.sum());
-
-matrix2.addRow([2, 8, 3], 0);
-
-console.log('Проверка матриц на равенство (=true):\n', matrix1.isEqual(matrix2))
-
-console.log('Содержимое двух матриц:\n');
-matrix1.print();
-console.log('-------');
-matrix2.print();
-console.log('-------');
-
-
-matrix1.removeColumn(2);
-matrix1.addColumn([2], 2);
-
-console.log('Проверка матриц на равенство (=false):\n', matrix1.isEqual(matrix2))
-
-console.log('Содержимое двух матриц:\n');
-matrix1.print();
-console.log('-------');
-matrix2.print();
-console.log('-------');
-
-
-let stringDictionary = new StringDictionary();
-stringDictionary.add('only english symbols');
-stringDictionary.add('Я начинаюсь с гласной, но !самая длинная кккккккккккккккккккккккккккк');
-stringDictionary.add('Не я начинаюсь с гласной, но самая длинная кккккккккккккккккккккккккккк');
-stringDictionary.add('Воот тут две буквы о');
-stringDictionary.add('Максимальное количество гласных в этой строкееееее');
-stringDictionary.add('Одинаковая строка')
-stringDictionary.add('Одинаковая строка')
-stringDictionary.add('Одинаковая строка но с разным регистром')
-stringDictionary.add('Одинаковая Строка Но С Разным Регистром')
-stringDictionary.add('Ровно 10 с')
-stringDictionary.add('Ровно 11 с.')
-stringDictionary.add('Мало')
-
-console.log('Содержимое словаря:\n', stringDictionary.strStorage)
-
-console.log('Вывести строки с парными символами:\n', stringDictionary.getWithDoubleSymbols())
-console.log('Вывести самую длинную строку:\n',stringDictionary.getLongest())
-console.log('Вывести самую длинную строку:\n, которая начинается с гласной',stringDictionary.getLongestWithFirstVowel())
-console.log('Вывести уникальные строки:\n',stringDictionary.getAllDifferent())
-
-console.log('Получить строки длинную больше 10:\n', stringDictionary.getWithLengthMore(5))
-
-
-
-
-stringDictionary2 = new StringDictionary()
-stringDictionary2.add('abc')
-stringDictionary2.add('abcgefda')
-stringDictionary2.add('iopi')
-
-console.log('Содержимое словаря:\n', stringDictionary2.strStorage)
-console.log('Разделить на две части:\n', stringDictionary2.splitOnTwoParts())
-console.log('Получить количество различных символов:\n', stringDictionary2.getAllDifferentSymbolCount())
-console.log('Выводим содержимое хранилища посимвольно (надпись "add new str: newStr означает добавление строки в хранилище во время вывода его содержимого"):')
-stringDictionary2.print().then(() => console.log('Вывод завершен'));
-
-setTimeout(() => {
-    stringDictionary2.add('newStr');
-    console.log('add new str: newStr')
-}, 2500)
-
